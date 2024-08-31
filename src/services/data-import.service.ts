@@ -27,7 +27,7 @@ export class DataImportService {
     try {
       const fileId = this.extractFileId(this.fileUrl);
       const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
-      
+
       // Fetch the file
       const response = await lastValueFrom(
         this.httpService.get(downloadUrl, { responseType: 'stream' }),
@@ -41,13 +41,15 @@ export class DataImportService {
         .on('end', async () => {
           try {
             await this.bulkInsertIfNotExists(results);
-            this.logger.log('Data import completed with skipping existing records.');
+            this.logger.log(
+              'Data import completed with skipping existing records.',
+            );
           } catch (error) {
             this.logger.error('Error importing data', error);
           }
         });
     } catch (error) {
-        console.log('Error fetching CSV file', error);
+      console.log('Error fetching CSV file', error);
       this.logger.error('Error fetching CSV file', error);
     }
   }
@@ -72,15 +74,17 @@ export class DataImportService {
 
       return {
         updateOne: {
-          filter,                              // Match the entire record
-          update: { $setOnInsert: record },     // Insert only if not exists
-          upsert: true,                         // Upsert option for the operation
+          filter, // Match the entire record
+          update: { $setOnInsert: record }, // Insert only if not exists
+          upsert: true, // Upsert option for the operation
         },
       };
     });
 
     try {
-      const result = await this.caseModel.bulkWrite(bulkOps, { ordered: false });
+      const result = await this.caseModel.bulkWrite(bulkOps, {
+        ordered: false,
+      });
       this.logger.log(`Inserted ${result.upsertedCount} new records.`);
     } catch (error) {
       this.logger.error('Error performing bulk insert', error);

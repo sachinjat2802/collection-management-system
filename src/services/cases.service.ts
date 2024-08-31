@@ -10,7 +10,10 @@ export class CasesService {
   async getAggregatedData(startDate: string, endDate: string) {
     const match = {};
     if (startDate && endDate) {
-      match['CreatedAt'] = { $gte: new Date(startDate), $lte: new Date(endDate) };
+      match['CreatedAt'] = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      };
     }
 
     return this.caseModel.aggregate([
